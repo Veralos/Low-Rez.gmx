@@ -7,10 +7,15 @@
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprite>sprites\spr_card</sprite>
+    <sprite>sprites\spr_bar</sprite>
     <sprite>sprites\spr_card2</sprite>
     <sprite>sprites\spr_symbol</sprite>
-    <sprite>sprites\spr_deal</sprite>
+    <sprite>sprites\spr_effect</sprite>
+    <sprite>sprites\spr_selector</sprite>
     <sprite>sprites\spr_cost</sprite>
+    <sprite>sprites\spr_goblin</sprite>
+    <sprite>sprites\spr_elf</sprite>
+    <sprite>sprites\spr_merfolk</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -19,6 +24,9 @@
     <script>scripts\scr_draw_card_2.gml</script>
     <script>scripts\scr_create_card.gml</script>
     <script>scripts\scr_draw_from_deck.gml</script>
+    <script>scripts\scr_discard_from_hand.gml</script>
+    <script>scripts\scr_draw_enemy.gml</script>
+    <script>scripts\scr_damage.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_3x4</font>
@@ -26,8 +34,14 @@
   <objects name="objects">
     <object>objects\obj_control</object>
     <object>objects\obj_card</object>
-    <object>objects\object2</object>
     <object>objects\obj_player</object>
+    <object>objects\obj_enemy</object>
+    <object>objects\obj_goblin</object>
+    <object>objects\obj_elf</object>
+    <object>objects\obj_merfolk</object>
+    <object>objects\obj_battle</object>
+    <object>objects\obj_damage_number</object>
+    <object>objects\obj_card_effects</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_test</room>

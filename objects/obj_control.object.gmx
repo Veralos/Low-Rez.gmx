@@ -32,6 +32,74 @@ window_set_size(640, 640);
 window_set_position(display_get_width() / 2 - 320, display_get_height() / 2 - 320);
 
 player = instance_create(0, 0, obj_player);
+
+mode_card = 0;
+mode_enemy = 1;
+mode_effects = 2;
+mode_enemies = 4;
+
+mode = mode_card;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>switch (mode) {
+    /*case mode_card:
+        
+        if (keyboard_check_pressed(ord('A'))) {
+            var card = ds_list_find_value(obj_player.hand, obj_player.selected);
+            if (card.cost &lt;= obj_player.mana) {     
+                mode = mode_enemy;
+            }
+        }
+        else if (keyboard_check_pressed(ord('D'))) {
+            mode = mode_enemies;
+        }    
+        break;   
+    case mode_enemy:  
+        if (keyboard_check_pressed(ord('A'))) {
+            mode = mode_effects;
+            
+            var card = ds_list_find_value(obj_player.hand, obj_player.selected);
+            
+            obj_player.mana -= card.cost; 
+            
+            var effects = instance_create(0, 0, obj_card_effects);
+            effects.card = card;
+            effects.enemy = ds_list_find_value(obj_battle.enemies, obj_battle.selected);
+            
+            scr_discard_from_hand(obj_player.discard, obj_player.hand, obj_player.selected);
+            if (obj_player.selected &gt; ds_list_size(obj_player.hand)-1) {
+                obj_player.selected = ds_list_size(obj_player.hand)-1;
+            }
+        }
+    
+        break;*/
+    case mode_effects:
+        if (!instance_exists(obj_card_effects)) {
+            mode = mode_card;
+        }
+        
+        break;
+}
 </string>
           </argument>
         </arguments>
@@ -54,16 +122,54 @@ player = instance_create(0, 0, obj_player);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>scr_draw_card(0, 0, 7, 0);
-scr_draw_card(12, 0, 4, 1);
-scr_draw_card(24, 0, 10, 2);
-scr_draw_card(36, 0, 9, 3);
+            <string>var hand_x = room_width / 2;
+var hand_y = room_height - 12;
 
-hand_size = ds_list_size(player.hand)
-hand_width = 50 - 12;
-space = hand_width / (hand_size);
-for (var i = 0; i &lt; ds_list_size(player.hand); i++) {
-    scr_draw_card_2(room_width / 2 - 50 / 2 + space * i, room_height - 16, ds_list_find_value(player.hand, i));
+hand_size = ds_list_size(player.hand);
+if (hand_size) &gt; 0 {
+    hand_width = 36;
+    size = hand_size;
+    if (size &lt; 4) {
+        size = 4;
+    }
+    space = hand_width / (size - 1);
+    for (var i = 0; i &lt; ds_list_size(player.hand); i++) {
+        if (i != player.selected) {
+            scr_draw_card_2(hand_x - space * (hand_size - 1) / 2 + space * i, hand_y, ds_list_find_value(player.hand, i));
+        }
+    }
+    i = player.selected;
+    scr_draw_card_2(hand_x - space * (hand_size - 1) / 2 + space * i, hand_y - 2, ds_list_find_value(player.hand, i));
+}
+
+draw_set_halign(1);
+draw_set_valign(1);
+draw_set_color(c_black);
+draw_set_font(fnt_3x4);
+
+draw_sprite(spr_card, 0, 3, hand_y + 2);
+draw_sprite(spr_card, 0, room_width - 3, hand_y + 2);
+
+draw_text(4, hand_y + 1, ds_list_size(player.deck));
+draw_text(room_width - 4, hand_y + 1, ds_list_size(player.discard));
+
+draw_sprite(spr_bar, 0, 0, room_height - 6);
+
+draw_text(8, room_height - 3, string(obj_player.mana) + "/" + string(obj_player.mana_max));
+
+draw_x = room_width - 8;
+draw_y = room_height - 3;
+draw_sprite_ext(spr_effect, 4, draw_x - 6, draw_y, 1, 1, 0, draw_get_color(), 1);
+draw_text(draw_x + 2, draw_y, obj_player.hp);
+
+var stat_i = 1;
+stat[stat_i++] = obj_player.atk;
+stat[stat_i++] = obj_player.def;
+stat[stat_i++] = obj_player.draw;
+
+for (var i = 1; i &lt; 4; i++) {
+    draw_sprite_ext(spr_effect, i, room_width / 2 + 9 * (i - 2) - 2, draw_y, 1, 1, 0, draw_get_color(), 1);
+    draw_text(room_width / 2 + 9 * (i - 2) + 3, draw_y, stat[i]);
 }
 </string>
           </argument>

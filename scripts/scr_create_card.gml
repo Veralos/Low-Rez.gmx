@@ -8,7 +8,9 @@ card.cost = cost;
 var i;
 i = 0;
 card.effects[i++] = 0;
+card.effects[i++] = 0;
 i = 0;
+card.values[i++] = damage;
 card.values[i++] = damage;
 
 return card;

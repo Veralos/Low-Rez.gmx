@@ -25,7 +25,16 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>deck = ds_list_create();
+            <string>randomize();
+
+hp = 100;
+mana_max = 3;
+mana = mana_max;
+atk = 0;
+def = 0;
+draw = 0;
+
+deck = ds_list_create();
 
 for (var element = 0; element &lt; 3; element++) {
     ds_list_add(deck, scr_create_card(element, 1, 2));
@@ -40,10 +49,126 @@ for (var element = 0; element &lt; 3; element++) {
 
 ds_list_shuffle(deck);
 
+discard = ds_list_create();
+
 hand = ds_list_create();
 
-for (var i = 0; i &lt; 5; i++) {
-    scr_draw_from_deck(deck, hand);
+while (ds_list_size(hand) &lt; 4) {
+    scr_draw_from_deck(deck, hand, discard);
+}
+
+selected = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>switch (obj_control.mode) {
+    case obj_control.mode_card:
+        if (keyboard_check_pressed(vk_left)) {
+            selected--;
+        }
+        if (keyboard_check_pressed(vk_right)) {
+            selected++;
+        }
+        
+        var hand_size = ds_list_size(hand);
+        if (selected &lt; 0) {
+            selected = hand_size-1;
+        }
+        if (selected &gt; hand_size-1) {
+            selected = 0;
+        }
+        
+        if (keyboard_check_pressed(ord('A'))) {
+            var card = ds_list_find_value(hand, selected);
+            if (card.cost &lt;= mana) {     
+                obj_control.mode = obj_control.mode_enemy;
+            }
+        }
+        else if (keyboard_check_pressed(ord('D'))) {
+            obj_control.mode = obj_control.mode_enemies;
+            
+            while (!ds_list_empty(hand)) {
+                scr_discard_from_hand(discard, hand, 0);
+            }
+            
+            selected = 0;
+        } 
+           
+        break;   
+    case obj_control.mode_enemy:  
+        if (keyboard_check_pressed(ord('A'))) {
+            obj_control.mode = obj_control.mode_effects;
+            
+            var card = ds_list_find_value(hand, selected);
+            
+            mana -= card.cost; 
+            
+            var effects = instance_create(0, 0, obj_card_effects);
+            effects.card = card;
+            effects.enemy = ds_list_find_value(obj_battle.enemies, obj_battle.selected);
+            
+            scr_discard_from_hand(discard, hand, selected);
+            if (selected &gt; ds_list_size(hand)-1) {
+                selected = ds_list_size(hand)-1;
+            }
+        }
+    
+        break;
+    case obj_control.mode_enemies:
+        if (keyboard_check_pressed(ord('A'))) {
+            obj_control.mode = obj_control.mode_card;
+            
+            mana = mana_max;
+            
+            while (ds_list_size(hand) &lt; 4) {
+                scr_draw_from_deck(deck, hand, discard);
+            }
+        }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="40">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>scr_discard_from_hand(discard, hand, selected);
+if (selected &gt; ds_list_size(hand)-1) {
+    selected = ds_list_size(hand)-1;
 }
 </string>
           </argument>
@@ -67,7 +192,7 @@ for (var i = 0; i &lt; 5; i++) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>scr_draw_from_deck(deck, hand);
+            <string>scr_draw_from_deck(deck, hand, discard);
 </string>
           </argument>
         </arguments>
